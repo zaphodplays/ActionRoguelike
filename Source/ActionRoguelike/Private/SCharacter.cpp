@@ -11,10 +11,10 @@ ASCharacter::ASCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	SpringArmComp = CreateAbstractDefaultSubobject<USpringArmComponent>("SpringArmComp");
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->SetupAttachment(RootComponent);
 
-	CameraComp = CreateAbstractDefaultSubobject<UCameraComponent>("CameraComp");
+	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 }
 
@@ -45,6 +45,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+
+	PlayerInputComponent->BindAxis("Lookup", this, &APawn::AddControllerPitchInput);
 
 }
 
