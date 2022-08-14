@@ -34,7 +34,7 @@ void ASItemChest::Tick(float DeltaTime)
 
 }
 
-void ASItemChest::interact_Implementation(APawn* InstigatorPawn)
+void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	if (!bIsOpen)
 	{

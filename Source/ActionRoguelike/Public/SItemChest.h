@@ -38,6 +38,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	void interact_Implementation(APawn* InstigatorPawn) override;
+	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 };

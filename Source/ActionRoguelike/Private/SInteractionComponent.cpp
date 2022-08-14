@@ -32,12 +32,12 @@ void USInteractionComponent::PrimaryInteract()
 	AActor* HitActor = Hit.GetActor();
 	if (HitActor)
 	{
-		ISGameplayInterface* Interactable = Cast<ISGameplayInterface>(HitActor);
-		if (Interactable)
+		if (HitActor->Implements<USGameplayInterface>())
 		{
 			APawn* Pawn = Cast<APawn>(GetOwner());
 			
-			Interactable->interact(Pawn);
+			ISGameplayInterface* Interactable = Cast<ISGameplayInterface>(HitActor);
+			Interactable->Execute_Interact(HitActor, Pawn);
 		}
 	}
 }
