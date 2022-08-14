@@ -28,6 +28,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* LidMeshComp;
 
+	bool bIsOpen = false;
+
+	UPROPERTY(EditAnywhere)
+	float TargetPitch;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
