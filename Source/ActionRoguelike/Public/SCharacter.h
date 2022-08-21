@@ -21,8 +21,14 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AnimMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Attack");
+	float Attack_TimeDelay = 0.2f;
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
@@ -31,6 +37,8 @@ protected:
 	UCameraComponent* CameraComp;
 
 	USInteractionComponent* InteractionComp;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,6 +50,8 @@ protected:
 	void PrimaryAttack();
 
 	void Jump();
+
+	void PrimaryAttack_TimeElapsed();
 
 	void PrimaryInteract();
 
