@@ -25,23 +25,43 @@ void USInteractionComponent::PrimaryInteract()
 	GetOwner()->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 	FVector End = EyeLocation + (EyeRotation.Vector() * 1000.f);
-	FHitResult Hit;
+	//FHitResult Hit;
 
-	GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+	//bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
-	AActor* HitActor = Hit.GetActor();
-	if (HitActor)
+	float Radius = 30.f;
+
+	TArray<FHitResult> Hits;
+	FCollisionShape Shape;
+	Shape.SetSphere(Radius);
+
+	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
+	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+
+	for (FHitResult& Hit : Hits)
 	{
-		if (HitActor->Implements<USGameplayInterface>())
+		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0);
+		AActor* HitActor = Hit.GetActor();
+
+		if (HitActor)
 		{
-			APawn* Pawn = Cast<APawn>(GetOwner());
-			
-			ISGameplayInterface* Interactable = Cast<ISGameplayInterface>(HitActor);
-			
-			ISGameplayInterface::Execute_Interact(HitActor, Pawn);
-			//Interactable->Execute_Interact(HitActor, Pawn);
+			if (HitActor->Implements<USGameplayInterface>())
+			{
+				APawn* Pawn = Cast<APawn>(GetOwner());
+
+				ISGameplayInterface* Interactable = Cast<ISGameplayInterface>(HitActor);
+
+				ISGameplayInterface::Execute_Interact(HitActor, Pawn);
+				//Interactable->Execute_Interact(HitActor, Pawn);
+				break;
+			}
 		}
+		
 	}
+
+	
+	//FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+	DrawDebugDirectionalArrow(GetWorld(), EyeLocation, End, 2.f, LineColor, false, 2.f, 0.f, 2.f);
 }
 
 // Called when the game starts
