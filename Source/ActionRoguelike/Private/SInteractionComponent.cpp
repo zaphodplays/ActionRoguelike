@@ -37,7 +37,9 @@ void USInteractionComponent::PrimaryInteract()
 			APawn* Pawn = Cast<APawn>(GetOwner());
 			
 			ISGameplayInterface* Interactable = Cast<ISGameplayInterface>(HitActor);
-			Interactable->Execute_Interact(HitActor, Pawn);
+			
+			ISGameplayInterface::Execute_Interact(HitActor, Pawn);
+			//Interactable->Execute_Interact(HitActor, Pawn);
 		}
 	}
 }
