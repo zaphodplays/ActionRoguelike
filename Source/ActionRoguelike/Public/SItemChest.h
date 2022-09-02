@@ -25,15 +25,17 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BaseMeshComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* LidMeshComp;
 
-	bool bIsOpen = false;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TargetPitch;
 
 public:	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bIsOpen = false;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
