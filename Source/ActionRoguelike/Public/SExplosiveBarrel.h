@@ -25,6 +25,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComp;
 
+	UPROPERTY(EditAnywhere)
 	URadialForceComponent* RadialForceComp;
 
 
