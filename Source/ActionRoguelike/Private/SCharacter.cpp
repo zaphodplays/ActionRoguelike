@@ -6,6 +6,7 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include "SInteractionComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -71,7 +72,38 @@ void ASCharacter::Jump()
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	FVector EyeLocation;
+	FRotator EyeRotation;
+	FVector CamForwardDirection;
+	FQuat CamRotation;
+	
+	EyeLocation = CameraComp->GetComponentLocation();
+	CamForwardDirection = CameraComp->GetForwardVector();
+	
+	//GetOwner()->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+	FVector End = EyeLocation + (CamForwardDirection * 10000.f);
+	FHitResult Hit;
+	FVector TargettedLocation;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+	if (bBlockingHit)
+	{
+		TargettedLocation = Hit.Location;
+		if(bDebugOn)
+			DrawDebugLine(GetWorld(), EyeLocation, TargettedLocation, FColor::Red, false, 30.0f);
+	}
+	else
+	{
+		TargettedLocation = Hit.TraceEnd;
+	}
+	
+	FRotator ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargettedLocation);
+	FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
