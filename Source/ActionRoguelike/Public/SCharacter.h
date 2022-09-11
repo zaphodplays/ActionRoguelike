@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack");
 	float Attack_TimeDelay = 0.2f;
 
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> WarpProjectileClass;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
@@ -51,6 +54,8 @@ protected:
 	void MoveRight(float Value);
 
 	void PrimaryAttack();
+
+	void WarpAttack();
 
 	void Jump();
 

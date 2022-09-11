@@ -110,6 +110,47 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
+void ASCharacter::WarpAttack()
+{
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	FVector EyeLocation;
+	FRotator EyeRotation;
+	FVector CamForwardDirection;
+	FQuat CamRotation;
+
+	EyeLocation = CameraComp->GetComponentLocation();
+	CamForwardDirection = CameraComp->GetForwardVector();
+
+	//GetOwner()->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+	FVector End = EyeLocation + (CamForwardDirection * 10000.f);
+	FHitResult Hit;
+	FVector TargettedLocation;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+	if (bBlockingHit)
+	{
+		TargettedLocation = Hit.Location;
+		if (bDebugOn)
+			DrawDebugLine(GetWorld(), EyeLocation, TargettedLocation, FColor::Red, false, 30.0f);
+	}
+	else
+	{
+		TargettedLocation = Hit.TraceEnd;
+	}
+
+	FRotator ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargettedLocation);
+	FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+	GetWorld()->SpawnActor<AActor>(WarpProjectileClass, SpawnTM, SpawnParams);
+}
+
 void ASCharacter::PrimaryInteract()
 {
 	InteractionComp->PrimaryInteract();
@@ -136,6 +177,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Lookup", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+
+	PlayerInputComponent->BindAction("WarpAttack", IE_Pressed, this, &ASCharacter::WarpAttack);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::Jump);
 
