@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(EditAnywhere, Category = "Debug")
+	bool bDebugOn;
+
 	USInteractionComponent* InteractionComp;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
