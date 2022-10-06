@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> WarpProjectileClass;
 
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> DashProjectileClass;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
@@ -57,6 +60,8 @@ protected:
 
 	void WarpAttack();
 
+	void DashProjectileAttack();
+
 	void Jump();
 
 	void PrimaryAttack_TimeElapsed();
@@ -69,5 +74,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+private:
+	void SetupAttack(FActorSpawnParameters& SpawnParams, FTransform& SpawnTM);
 
 };

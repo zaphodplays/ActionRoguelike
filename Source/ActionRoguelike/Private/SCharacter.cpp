@@ -71,84 +71,29 @@ void ASCharacter::Jump()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-
-	FVector EyeLocation;
-	FRotator EyeRotation;
-	FVector CamForwardDirection;
-	FQuat CamRotation;
-	
-	EyeLocation = CameraComp->GetComponentLocation();
-	CamForwardDirection = CameraComp->GetForwardVector();
-	
-	//GetOwner()->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
-	FVector End = EyeLocation + (CamForwardDirection * 10000.f);
-	FHitResult Hit;
-	FVector TargettedLocation;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
-	if (bBlockingHit)
-	{
-		TargettedLocation = Hit.Location;
-		if(bDebugOn)
-			DrawDebugLine(GetWorld(), EyeLocation, TargettedLocation, FColor::Red, false, 30.0f);
-	}
-	else
-	{
-		TargettedLocation = Hit.TraceEnd;
-	}
-	
-	FRotator ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargettedLocation);
-	FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+	FTransform SpawnTM;
+	SetupAttack(SpawnParams, SpawnTM);
+
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
 void ASCharacter::WarpAttack()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-
-	FVector EyeLocation;
-	FRotator EyeRotation;
-	FVector CamForwardDirection;
-	FQuat CamRotation;
-
-	EyeLocation = CameraComp->GetComponentLocation();
-	CamForwardDirection = CameraComp->GetForwardVector();
-
-	//GetOwner()->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
-	FVector End = EyeLocation + (CamForwardDirection * 10000.f);
-	FHitResult Hit;
-	FVector TargettedLocation;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
-	if (bBlockingHit)
-	{
-		TargettedLocation = Hit.Location;
-		if (bDebugOn)
-			DrawDebugLine(GetWorld(), EyeLocation, TargettedLocation, FColor::Red, false, 30.0f);
-	}
-	else
-	{
-		TargettedLocation = Hit.TraceEnd;
-	}
-
-	FRotator ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargettedLocation);
-	FTransform SpawnTM = FTransform(ProjectileRotation, HandLocation);
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+	FTransform SpawnTM;
+	SetupAttack(SpawnParams, SpawnTM);
+
 	GetWorld()->SpawnActor<AActor>(WarpProjectileClass, SpawnTM, SpawnParams);
+}
+
+void ASCharacter::DashProjectileAttack()
+{
+	FActorSpawnParameters SpawnParams;
+	FTransform SpawnTM;
+	SetupAttack(SpawnParams, SpawnTM);
+
+	GetWorld()->SpawnActor<AActor>(DashProjectileClass, SpawnTM, SpawnParams);
 }
 
 void ASCharacter::PrimaryInteract()
@@ -184,5 +129,46 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 
+	PlayerInputComponent->BindAction("DashProjectileAttack", IE_Pressed, this, &ASCharacter::DashProjectileAttack);
+
+}
+
+void ASCharacter::SetupAttack(FActorSpawnParameters& SpawnParams, FTransform& SpawnTM)
+{
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	FVector EyeLocation;
+	FRotator EyeRotation;
+	FVector CamForwardDirection;
+	FQuat CamRotation;
+
+	EyeLocation = CameraComp->GetComponentLocation();
+	CamForwardDirection = CameraComp->GetForwardVector();
+
+	//GetOwner()->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+	FVector End = EyeLocation + (CamForwardDirection * 10000.f);
+	FHitResult Hit;
+	FVector TargettedLocation;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+	if (bBlockingHit)
+	{
+		TargettedLocation = Hit.Location;
+		if (bDebugOn)
+			DrawDebugLine(GetWorld(), EyeLocation, TargettedLocation, FColor::Red, false, 30.0f);
+	}
+	else
+	{
+		TargettedLocation = Hit.TraceEnd;
+	}
+
+	FRotator ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargettedLocation);
+	SpawnTM = FTransform(ProjectileRotation, HandLocation);
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
 }
 
