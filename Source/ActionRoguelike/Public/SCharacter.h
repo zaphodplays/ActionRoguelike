@@ -68,6 +68,9 @@ protected:
 
 	void PrimaryInteract();
 
+	UFUNCTION(BlueprintCallable)
+	void TeleportPlayer(const FVector& Location);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -77,5 +80,9 @@ public:
 
 private:
 	void SetupAttack(FActorSpawnParameters& SpawnParams, FTransform& SpawnTM);
+
+	
+
+	void TeleportToLocationAndRotation(FVector Location, FRotator Rotation);
 
 };

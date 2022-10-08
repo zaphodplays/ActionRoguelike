@@ -96,6 +96,25 @@ void ASCharacter::DashProjectileAttack()
 	GetWorld()->SpawnActor<AActor>(DashProjectileClass, SpawnTM, SpawnParams);
 }
 
+void ASCharacter::TeleportPlayer(const FVector& Location)
+{
+	FVector PlayerLocation = this->GetActorForwardVector();
+	FVector NewLocation = FVector(Location);
+	NewLocation.Z = PlayerLocation.Z;
+	FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(PlayerLocation, NewLocation);
+	
+	FTimerHandle UniqueHandle;
+	FTimerDelegate TeleportDelegate = FTimerDelegate::CreateUObject(this, &ASCharacter::TeleportToLocationAndRotation, Location, Rotation);
+	
+	GetWorldTimerManager().SetTimer(UniqueHandle, TeleportDelegate, Attack_TimeDelay, false);
+	
+}
+
+void ASCharacter::TeleportToLocationAndRotation(FVector Location, FRotator Rotation)
+{
+	TeleportTo(Location, Rotation);
+}
+
 void ASCharacter::PrimaryInteract()
 {
 	InteractionComp->PrimaryInteract();
