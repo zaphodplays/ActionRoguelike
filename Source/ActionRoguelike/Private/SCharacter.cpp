@@ -6,6 +6,7 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include "SInteractionComponent.h"
+#include "SAttributeComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -22,6 +23,8 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
+
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -71,29 +74,38 @@ void ASCharacter::Jump()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FActorSpawnParameters SpawnParams;
-	FTransform SpawnTM;
-	SetupAttack(SpawnParams, SpawnTM);
+	if (ensureAlways(ProjectileClass))
+	{
+		FActorSpawnParameters SpawnParams;
+		FTransform SpawnTM;
+		SetupAttack(SpawnParams, SpawnTM);
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	}
 }
 
 void ASCharacter::WarpAttack()
 {
-	FActorSpawnParameters SpawnParams;
-	FTransform SpawnTM;
-	SetupAttack(SpawnParams, SpawnTM);
+	if (ensureAlways(WarpProjectileClass))
+	{
+		FActorSpawnParameters SpawnParams;
+		FTransform SpawnTM;
+		SetupAttack(SpawnParams, SpawnTM);
 
-	GetWorld()->SpawnActor<AActor>(WarpProjectileClass, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(WarpProjectileClass, SpawnTM, SpawnParams);
+	}
 }
 
 void ASCharacter::DashProjectileAttack()
 {
-	FActorSpawnParameters SpawnParams;
-	FTransform SpawnTM;
-	SetupAttack(SpawnParams, SpawnTM);
+	if (ensureAlways(DashProjectileClass))
+	{
+		FActorSpawnParameters SpawnParams;
+		FTransform SpawnTM;
+		SetupAttack(SpawnParams, SpawnTM);
 
-	GetWorld()->SpawnActor<AActor>(DashProjectileClass, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(DashProjectileClass, SpawnTM, SpawnParams);
+	}
 }
 
 void ASCharacter::TeleportPlayer(const FVector& Location)

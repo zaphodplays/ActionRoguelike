@@ -5,11 +5,12 @@
 #include <Components/SphereComponent.h>
 #include <GameFramework/ProjectileMovementComponent.h>
 #include <Particles/ParticleSystemComponent.h>
+#include "SAttributeComponent.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -17,6 +18,20 @@ void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ASMagicProjectile::onActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!IsValid(OtherActor))
+		return;
+
+	USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+	if (!IsValid(AttributeComp))
+		return;
+
+	AttributeComp->ApplyHealthChange(-5.f);
+
+	Destroy();
 }
 
 // Called every frame
