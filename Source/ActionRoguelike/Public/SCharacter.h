@@ -29,7 +29,7 @@ protected:
 	UAnimMontage* AnimMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Attack");
-	float Attack_TimeDelay = 0.2f;
+	float Attack_TimeDelay = 0.1f;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> WarpProjectileClass;
